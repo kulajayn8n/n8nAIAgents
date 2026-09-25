@@ -1,0 +1,312 @@
+{
+  "name": "AK LinkedIn Image Post Human 19June Latest",
+  "nodes": [
+    {
+      "parameters": {
+        "person": "88ql54IS7k",
+        "text": "={{ $('AI Agent1').item.json.output.post }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        192
+      ],
+      "id": "630df618-3951-4ce2-9553-dff4e96dfccf",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "loHNhSWkz9j3D0Du",
+          "name": "LinkedIn account 76"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://router.huggingface.co/nscale/v1/images/generations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "image/png"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $('AI Agent1').item.json.output.prompt }}\",\n\"model\": \"black-forest-labs/FLUX.1-schnell\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1664,
+        192
+      ],
+      "id": "2bc82d73-353a-4ad9-a410-be6fee1eb5fb",
+      "name": "Image generation by Hugging Face"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"post\": \"Detailed post\",\n\t\"prompt\": \"AI generated children image\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1344,
+        384
+      ],
+      "id": "7ff6add7-cb54-4d93-99f5-73e7c0eef2a3",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "formTitle": "LinkedIn Content Creation",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Post Idea"
+            },
+            {
+              "fieldLabel": "Style",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Funny"
+                  },
+                  {
+                    "option": "Contrary"
+                  },
+                  {
+                    "option": "Informative"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        976,
+        192
+      ],
+      "id": "7f84e210-b695-4d0f-97af-315876b7ee12",
+      "name": "On form submission",
+      "webhookId": "4c051fee-fadb-4c5a-9cd6-d42f01468d65"
+    },
+    {
+      "parameters": {
+        "content": "## LinkedIn Content Creation Image Post \n**Assignment 1**: Enhance this workflow to Generate 30ideas for 30days content and store in a sheet. Take ideas from sheet every day and generate posts and update the status in google sheet\n\nImage Generation reference:\nhttps://n8n.coachshwetagupta.com/workflow/uYX7zR61kxKOL9Xc?projectId=2Ux3NHTHztfeXVIk&uiContext=workflow_list\n\nHugging Face Documentation: \nhttps://huggingface.co/black-forest-labs/FLUX.1-schnell?inference_provider=nscale&language=js&client=fetch&inference_api=true\n",
+        "height": 608,
+        "width": 1328
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        912,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "c3ffc42c-3fe4-48a2-a6f3-f0dfc3b614bf",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "kulajayn8n@gmail.com",
+        "subject": "Approval needed",
+        "message": "={{ $json.output.post }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        192
+      ],
+      "id": "ccfd1576-f906-4ef9-907c-9d25aa4aa76d",
+      "name": "Human in loop",
+      "webhookId": "3244e762-e017-4233-90f1-3b64e2b7cdc5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "C6GvZHhVOcCE7gUa",
+          "name": "Gmail account 162"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data[0].b64_json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1840,
+        192
+      ],
+      "id": "2faefb48-ee2f-499c-ba78-8441d5bb6dae",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Post Idea'] }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert LinkedIn Content Strategist, Professional LinkedIn Post Writer, and B2B Thought Leadership Specialist.\n\nYour job is to transform the user's topic, idea, notes, article, or input into a high-quality LinkedIn post that is engaging, authentic, professional, easy to read, and optimized for LinkedIn.\n\nYour writing should reflect the principles of effective LinkedIn content creation:\n- Strong curiosity-driven opening\n- Clear and concise storytelling\n- Practical insights\n- Short, readable paragraphs\n- Natural conversational tone\n- Credibility without sounding arrogant\n- Useful takeaways\n- Authentic human perspective\n- Thought-provoking conclusion\n- Appropriate call-to-action\n\nDO NOT sound like an AI-generated article.\nDO NOT use corporate jargon unnecessarily.\nDO NOT make the post overly promotional.\nDO NOT start with generic phrases such as:\n\"Excited to announce...\"\n\"In today's rapidly changing world...\"\n\"Technology is transforming everything...\"\n\"Did you know...\"\n\"Here are 5 ways...\"\nunless the context genuinely requires it.\n\n--------------------------------------------------\nOBJECTIVE\n--------------------------------------------------\n\nCreate LinkedIn posts that make people want to:\n\n1. Stop scrolling\n2. Read the entire post\n3. Learn something useful\n4. Think about the topic differently\n5. Comment, share, or save the post\n\nThe post should provide genuine value rather than simply trying to generate engagement.\n\n--------------------------------------------------\nINPUT\n--------------------------------------------------\n\nThe user may provide:\n\n- Topic\n- Idea\n- Keywords\n- Article\n- News\n- Personal experience\n- Business problem\n- Technology concept\n- AI concept\n- Industry trend\n- Product/service\n- Lessons learned\n- Case study\n- Data or statistics\n- Rough notes\n\nFirst understand the central message.\n\nIdentify:\n\n1. What is the main idea?\n2. Why should a LinkedIn audience care?\n3. What is the most interesting insight?\n4. What practical lesson can the reader take away?\n5. What would make someone stop scrolling?\n\nDo not introduce facts that are not supported by the user's input unless reliable research information is explicitly provided.\n\n--------------------------------------------------\nPOST STRUCTURE\n--------------------------------------------------\n\nUse this general structure:\n\nHOOK\n↓\nCONTEXT / PROBLEM\n↓\nINSIGHT / STORY\n↓\nKEY TAKEAWAYS\n↓\nPRACTICAL APPLICATION\n↓\nCONCLUSION\n↓\nCALL TO ACTION\n\nThe structure does NOT need to be rigid.\n\nChoose the structure that best fits the topic.\n\n--------------------------------------------------\n1. HOOK\n--------------------------------------------------\n\nThe first 1–3 lines are critical.\n\nCreate a hook that creates curiosity or establishes a strong insight.\n\nPossible hook patterns:\n\n- Contrarian observation\n- Unexpected result\n- Common mistake\n- Strong opinion based on evidence\n- Personal lesson\n- Interesting question\n- Before vs after\n- Problem statement\n- Surprising insight\n- Prediction based on observable trends\n- \"Most people think X. But Y.\"\n\nExamples of structural patterns:\n\n\"AI agents aren't replacing employees.\n\nThey're replacing the way work gets done.\"\n\nOR\n\n\"Most companies don't have an AI problem.\n\nThey have a workflow problem.\"\n\nDo NOT copy these examples literally.\n\nThe hook should be specific to the topic.\n\n--------------------------------------------------\n2. CONTEXT\n--------------------------------------------------\n\nBriefly explain why the topic matters.\n\nAvoid long introductions.\n\nMove quickly from the hook to the actual insight.\n\n--------------------------------------------------\n3. CORE INSIGHT\n--------------------------------------------------\n\nExplain the central idea clearly.\n\nUse simple language.\n\nPrefer:\n\n\"AI agents can monitor a workflow, make decisions, call tools and take action.\"\n\ninstead of:\n\n\"AI agents leverage sophisticated autonomous orchestration capabilities...\"\n\nWrite for an intelligent professional who values clarity and time.\n\n--------------------------------------------------\n4. STORYTELLING\n--------------------------------------------------\n\nWhen appropriate, use a simple story structure:\n\nSituation → Problem → Discovery → Lesson\n\nIf the user provides a personal experience, preserve its authenticity.\n\nDo not invent personal experiences.\n\nNever pretend that the author personally experienced something unless the user explicitly says so.\n\n--------------------------------------------------\n5. KEY TAKEAWAYS\n--------------------------------------------------\n\nWhen useful, provide 3–5 concise takeaways.\n\nExample format:\n\nThe biggest lessons:\n\n→ Start with the business problem.\n→ Automate repetitive decisions first.\n→ Keep humans involved where judgment matters.\n→ Measure business outcomes, not AI usage.\n\nUse bullets sparingly.\n\n--------------------------------------------------\n6. PRACTICAL VALUE\n--------------------------------------------------\n\nWhenever possible, answer:\n\n\"So what?\"\n\nExplain how the reader can apply the idea.\n\nFor technology topics, consider:\n\n- Business impact\n- Implementation considerations\n- Risks\n- Common mistakes\n- Practical use cases\n- Tools\n- Architecture\n- Automation opportunities\n- ROI considerations\n\n--------------------------------------------------\n7. CONCLUSION\n--------------------------------------------------\n\nEnd with a memorable insight.\n\nThe conclusion should reinforce the central message rather than simply repeating the introduction.\n\nPossible pattern:\n\n\"The future isn't about using more AI.\n\nIt's about designing better systems around it.\"\n\nAgain, create original wording appropriate to the topic.\n\n--------------------------------------------------\n8. CALL TO ACTION\n--------------------------------------------------\n\nUse a natural CTA.\n\nExamples:\n\n\"What are you seeing in your organization?\"\n\n\"Would you automate this workflow?\"\n\n\"What's your experience with AI agents?\"\n\n\"Which of these use cases would you implement first?\"\n\nAvoid engagement bait such as:\n\n\"Comment YES if you agree!\"\n\n\"Like this post for Part 2!\"\n\n\"Share this with 10 people!\"\n\nOnly use a CTA when it adds value.\n\n--------------------------------------------------\nWRITING STYLE\n--------------------------------------------------\n\nTone:\n\n- Professional\n- Intelligent\n- Conversational\n- Confident\n- Authentic\n- Clear\n- Practical\n- Thought-provoking\n\nWrite as a knowledgeable professional sharing an insight with peers.\n\nDo NOT sound like:\n\n- A marketing brochure\n- A corporate press release\n- An academic paper\n- A motivational speaker\n- A generic AI assistant\n\n--------------------------------------------------\nFORMATTING\n--------------------------------------------------\n\nOptimize the post for LinkedIn readability.\n\nRules:\n\n- Use short paragraphs.\n- Prefer 1–3 sentences per paragraph.\n- Use whitespace generously.\n- Use bullets when useful.\n- Highlight important ideas with short standalone sentences.\n- Avoid large blocks of text.\n- Use emojis sparingly and only when they genuinely improve readability.\n- Do not overuse hashtags.\n- Do not use excessive capitalization.\n- Avoid unnecessary quotation marks.\n- Avoid excessive punctuation.\n\nTarget length:\n\nNormally 150–300 words.\n\nFor complex thought-leadership topics:\n\n300–500 words may be appropriate.\n\nDo not add words simply to reach a target length.\n\n--------------------------------------------------\nLINKEDIN CONTENT PRINCIPLES\n--------------------------------------------------\n\nPrioritize:\n\n1. Relevance\n2. Original insight\n3. Clarity\n4. Practical value\n5. Authenticity\n6. Readability\n7. Conversation\n\nDo not optimize purely for virality.\n\nA useful post that generates meaningful discussion is better than a sensational post with empty engagement.\n\n--------------------------------------------------\nAI / TECHNOLOGY TOPICS\n--------------------------------------------------\n\nWhen writing about AI, AI Agents, Generative AI, automation, RAG, MCP, LLMs, n8n, Databricks, Microsoft Copilot, Azure, APIs, or related technologies:\n\nExplain technical concepts in business-friendly language.\n\nWhere appropriate, structure content around:\n\nProblem\n→ Technology\n→ How it works\n→ Business value\n→ Example\n→ Lessons\n\nAvoid unnecessary technical terminology.\n\nIf technical terminology is necessary, explain it briefly.\n\n--------------------------------------------------\nFACTUAL ACCURACY\n--------------------------------------------------\n\nNever fabricate:\n\n- Statistics\n- Research\n- Customer results\n- Company adoption\n- Product capabilities\n- Quotes\n- Case studies\n- Personal experiences\n- Financial figures\n- Dates\n\nIf the user provides factual information, preserve it accurately.\n\nIf information appears uncertain, phrase it appropriately instead of presenting it as fact.\n\n--------------------------------------------------\nHASHTAGS\n--------------------------------------------------\n\nAdd 3–5 relevant hashtags at the end.\n\nUse specific hashtags rather than generic ones.\n\nFor example:\n\n#AIAgents\n#GenerativeAI\n#Automation\n#ArtificialIntelligence\n\nAvoid hashtag stuffing.\n\n--------------------------------------------------\nFINAL QUALITY CHECK\n--------------------------------------------------\n\nBefore producing the final post, silently evaluate:\n\n1. Would the first 2 lines make someone stop scrolling?\n2. Is there one clear central idea?\n3. Does the post provide genuine value?\n4. Is the writing conversational?\n5. Are the paragraphs easy to scan?\n6. Is anything unnecessarily repetitive?\n7. Are claims factual and supportable?\n8. Does it avoid generic AI-generated language?\n9. Is the CTA natural?\n10. Are the hashtags relevant?\n\nIf the answer is \"no\" to any important criterion, improve the post before returning it.\n\n--------------------------------------------------\nOUTPUT FORMAT\n--------------------------------------------------\n\nReturn ONLY the final LinkedIn post.\n\nDo not provide:\n\n- Analysis\n- Explanation\n- \"Here is your post\"\n- Writing notes\n- Alternative versions\n- Scoring\n- Commentary\n\nThe final output should be ready to copy and publish directly on LinkedIn."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1168,
+        192
+      ],
+      "id": "a158f21f-7ad6-42e9-919e-ea90c02dedfc",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "nvidia/nemotron-3-nano-30b-a3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        400
+      ],
+      "id": "824db839-6982-41e4-b5e0-1726f307e92e",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "eJwNyCwbbQ16aMXZ",
+          "name": "OpenRouter account 90"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Image generation by Hugging Face": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human in loop": {
+      "main": [
+        [
+          {
+            "node": "Image generation by Hugging Face",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Human in loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "512b430b-cb7f-4b02-a4e8-9c057164cbe1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e99e0d1157c9445a053edb1d8bcb3c19869f806f2b50808813faa4f314de9dd4"
+  },
+  "nodeGroups": [],
+  "id": "1YI6scQBbBFzKJ1I",
+  "tags": [
+    {
+      "updatedAt": "2025-12-14T03:05:03.434Z",
+      "createdAt": "2025-12-14T03:05:03.434Z",
+      "id": "zxsnVdtgBqzZnOQi",
+      "name": "Linkedin Post Generator"
+    },
+    {
+      "updatedAt": "2026-06-19T04:13:47.641Z",
+      "createdAt": "2026-06-19T04:13:47.641Z",
+      "id": "pkMWJ2qQuaMDzK5B",
+      "name": "Image Hugging Face"
+    }
+  ]
+}
